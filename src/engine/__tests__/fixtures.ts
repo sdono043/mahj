@@ -7,6 +7,7 @@
 import type { ExposedGroup, PlayerHand } from '../hand'
 import type { Dragon, Tile, Wind } from '../tiles'
 import type { HandPattern } from '../patterns'
+import type { GameState, SeatIndex } from '../table'
 
 let counter = 0
 function nextId(prefix: string): string {
@@ -127,4 +128,10 @@ export const PATTERN_HONORVAR: HandPattern = {
   pointsExposed: 40,
   allowsExposed: true,
   jokerAllowedPositions: [true, true, true, false, false, false],
+}
+
+/** Test helper: replaces one seat's concealed tiles, keeping GameState['hands'] properly tupled. */
+export function withConcealedTiles(state: GameState, seat: SeatIndex, tiles: Tile[]): GameState {
+  const hands = state.hands.map((h, i) => (i === seat ? { ...h, concealedTiles: tiles } : h))
+  return { ...state, hands: hands as unknown as GameState['hands'] }
 }
