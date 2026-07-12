@@ -1,0 +1,87 @@
+.tile {
+  width: 3rem;
+  height: 4rem;
+  border-radius: 0.375rem;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: #fdfdf7;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0;
+  font-family: inherit;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.tile-label {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tile-suit {
+  font-size: 0.55rem;
+  letter-spacing: 0.03em;
+  opacity: 0.65;
+}
+
+.tile-suit-dot .tile-label {
+  color: #2563eb;
+}
+.tile-suit-bam .tile-label {
+  color: #15803d;
+}
+.tile-suit-crak .tile-label {
+  color: #b91c1c;
+}
+.tile-suit-wind .tile-label {
+  color: #334155;
+}
+.tile-suit-flower .tile-label {
+  color: #a21caf;
+}
+.tile-suit-joker .tile-label {
+  color: #b45309;
+  font-size: 0.7rem;
+}
+
+.tile-dragon-red .tile-label {
+  color: #dc2626;
+}
+.tile-dragon-green .tile-label {
+  color: #16a34a;
+}
+.tile-dragon-white .tile-label {
+  color: #64748b;
+}
+
+.tile-clickable {
+  cursor: pointer;
+}
+.tile-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.tile-selected {
+  border-color: #2563eb;
+  background: #dbeafe;
+  transform: translateY(-6px);
+}
+
+.tile-face-down {
+  background: repeating-linear-gradient(45deg, #94a3b8, #94a3b8 4px, #7c8ba1 4px, #7c8ba1 8px);
+  border-color: #64748b;
+}
+
+.tile:disabled {
+  cursor: default;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tile {
+    background: #f8f8f2;
+  }
+}

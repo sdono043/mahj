@@ -1,0 +1,108 @@
+.hand-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+  min-height: 4rem;
+}
+
+.card-loader,
+.charleston-screen,
+.board {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.card-loader textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.75rem 0;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.card-loader-error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.charleston-hint {
+  font-weight: 600;
+}
+
+.opponents-row {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+
+.opponent-seat {
+  flex: 1;
+  min-width: 0;
+}
+
+.opponent-seat h3,
+.human-seat h3,
+.discard-pile h3 {
+  font-size: 0.9rem;
+  margin: 0 0 0.25rem;
+}
+
+.discard-count {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin: 0.25rem 0 0;
+}
+
+.discard-pile {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 0;
+  margin: 1rem 0;
+}
+
+.exposed-groups {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.human-seat {
+  margin-top: 1rem;
+}
+
+.board-status {
+  font-weight: 600;
+}
+
+.board-outcome {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  font-weight: 600;
+}
+
+.mahjong-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  .board-outcome {
+    background: #422006;
+    border-color: #b45309;
+    color: #fde68a;
+  }
+  .card-loader-error {
+    color: #f87171;
+  }
+}

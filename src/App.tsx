@@ -1,8 +1,67 @@
+import { Board } from './ui/Board'
+import { CardLoader } from './ui/CardLoader'
+import { CharlestonScreen } from './ui/CharlestonScreen'
+import { useMahjongGame } from './ui/useMahjongGame'
+import './ui/board.css'
+
 function App() {
+  const {
+    phase,
+    hasCard,
+    cardError,
+    charleston,
+    game,
+    humanSeat,
+    selectedIds,
+    validMahjongOptions,
+    loadCardText,
+    startGame,
+    toggleTileSelection,
+    submitHumanCharlestonPass,
+    discardSelectedTile,
+    declareMahjong,
+  } = useMahjongGame()
+
   return (
     <main>
       <h1>American Mahjong Coach</h1>
-      <p>Engine under construction — UI arrives in a later milestone.</p>
+
+      {phase === 'idle' && (
+        <>
+          {!hasCard && (
+            <>
+              <CardLoader error={cardError} onLoad={loadCardText} />
+              <p style={{ textAlign: 'center' }}>You can also explore without a card — mahjong declarations are disabled until one is loaded.</p>
+            </>
+          )}
+          {hasCard && <p style={{ textAlign: 'center' }}>Card loaded — ready to play.</p>}
+          <p style={{ textAlign: 'center' }}>
+            <button type="button" onClick={startGame}>
+              {hasCard ? 'Start game' : 'Start without a card'}
+            </button>
+          </p>
+        </>
+      )}
+
+      {phase === 'charleston' && charleston && (
+        <CharlestonScreen
+          setup={charleston}
+          selectedIds={selectedIds}
+          onToggleTile={toggleTileSelection}
+          onSubmitPass={submitHumanCharlestonPass}
+        />
+      )}
+
+      {(phase === 'playing' || phase === 'ended') && game && (
+        <Board
+          game={game}
+          humanSeat={humanSeat}
+          validMahjongOptions={validMahjongOptions}
+          onDiscard={discardSelectedTile}
+          onDeclareMahjong={(result) => declareMahjong(result.pattern)}
+          onNewGame={startGame}
+        />
+      )}
     </main>
   )
 }

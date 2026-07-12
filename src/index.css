@@ -6,3 +6,7 @@ body {
   margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
 }
+
+h1 {
+  text-align: center;
+}
