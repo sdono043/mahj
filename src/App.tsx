@@ -14,6 +14,7 @@ function App() {
     humanSeat,
     selectedIds,
     validMahjongOptions,
+    closestPatternInfo,
     humanCallPrompt,
     loadCardText,
     startGame,
@@ -60,7 +61,9 @@ function App() {
         <Board
           game={game}
           humanSeat={humanSeat}
+          hasCard={hasCard}
           validMahjongOptions={validMahjongOptions}
+          closestPatternInfo={closestPatternInfo}
           humanCallPrompt={humanCallPrompt}
           onDiscard={discardSelectedTile}
           onDeclareMahjong={(result) => declareMahjong(result.pattern)}

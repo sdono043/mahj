@@ -5,6 +5,7 @@ import { closestSeatClockwise } from '../engine/callPriority'
 import { CardLoadError, loadCard } from '../engine/cardLoader'
 import { collectCallCandidates, type CollectedCallCandidates } from '../engine/collectCallCandidates'
 import { beginPlayAfterCharleston, dealForCharleston, type CharlestonSetup } from '../engine/gameSetup'
+import { distanceToAllPatterns } from '../engine/matching'
 import { declareMahjongFromDiscard, declareMahjongFromDraw } from '../engine/mahjongDeclaration'
 import type { HandPattern } from '../engine/patterns'
 import { findValidMahjongDeclarations, type MahjongResult } from '../engine/scoring'
@@ -225,6 +226,11 @@ export function useMahjongGame() {
   }, [game, patterns, humanCallPrompt, resolveAfterDiscard])
 
   const validMahjongOptions = game && patterns ? findValidMahjongDeclarations(patterns, game.hands[HUMAN_SEAT]) : []
+  const closestPattern =
+    game && patterns ? distanceToAllPatterns(patterns, game.hands[HUMAN_SEAT])[0] ?? null : null
+  const closestPatternInfo = closestPattern
+    ? { displayPattern: closestPattern.pattern.displayPattern, tilesAway: closestPattern.tilesAway }
+    : null
 
   return {
     phase,
@@ -236,6 +242,7 @@ export function useMahjongGame() {
     humanSeat: HUMAN_SEAT,
     selectedIds,
     validMahjongOptions,
+    closestPatternInfo,
     humanCallPrompt,
     loadCardText,
     startGame,

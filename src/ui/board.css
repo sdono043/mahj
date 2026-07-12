@@ -6,6 +6,13 @@
   min-height: 4rem;
 }
 
+.hand-slot-draggable {
+  cursor: grab;
+}
+.hand-slot-draggable:active {
+  cursor: grabbing;
+}
+
 .card-loader,
 .charleston-screen,
 .board {
@@ -123,6 +130,12 @@
   flex-direction: column;
   gap: 0.5rem;
   margin: 1rem 0;
+}
+
+.mahjong-hint {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin: 0;
 }
 
 .call-prompt {

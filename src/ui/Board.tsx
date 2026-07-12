@@ -4,6 +4,7 @@ import type { GameState, SeatIndex } from '../engine/table'
 import { CallPrompt } from './CallPrompt'
 import { Hand } from './Hand'
 import { Legend } from './Legend'
+import { useOrderedTiles } from './useOrderedTiles'
 import type { HumanCallPrompt } from './useMahjongGame'
 
 const SEAT_LABELS = ['You', 'Seat 2', 'Seat 3', 'Seat 4']
@@ -11,7 +12,9 @@ const SEAT_LABELS = ['You', 'Seat 2', 'Seat 3', 'Seat 4']
 export interface BoardProps {
   game: GameState
   humanSeat: SeatIndex
+  hasCard: boolean
   validMahjongOptions: MahjongResult[]
+  closestPatternInfo: { displayPattern: string; tilesAway: number } | null
   humanCallPrompt: HumanCallPrompt | null
   onDiscard: (tileId: string) => void
   onDeclareMahjong: (result: MahjongResult) => void
@@ -24,7 +27,9 @@ export interface BoardProps {
 export function Board({
   game,
   humanSeat,
+  hasCard,
   validMahjongOptions,
+  closestPatternInfo,
   humanCallPrompt,
   onDiscard,
   onDeclareMahjong,
@@ -34,6 +39,7 @@ export function Board({
   onNewGame,
 }: BoardProps) {
   const humanTurn = game.currentSeat === humanSeat && game.phase === 'discard' && !humanCallPrompt
+  const [orderedHumanTiles, moveHumanTile] = useOrderedTiles(game.hands[humanSeat].concealedTiles)
 
   return (
     <section className="board">
@@ -90,7 +96,7 @@ export function Board({
       </div>
 
       <div className="human-seat">
-        <h3>Your hand{humanTurn ? ' — click a tile to discard' : ''}</h3>
+        <h3>Your hand{humanTurn ? ' — click a tile to discard, drag to reorder' : ' — drag to reorder'}</h3>
         {game.hands[humanSeat].exposedGroups.length > 0 && (
           <div className="exposed-groups">
             {game.hands[humanSeat].exposedGroups.map((g, i) => (
@@ -99,18 +105,28 @@ export function Board({
           </div>
         )}
         <Hand
-          tiles={game.hands[humanSeat].concealedTiles}
+          tiles={orderedHumanTiles}
           onTileClick={humanTurn ? (tile) => onDiscard(tile.id) : undefined}
+          onReorder={moveHumanTile}
         />
       </div>
 
-      {humanTurn && validMahjongOptions.length > 0 && (
+      {humanTurn && (
         <div className="mahjong-options">
-          {validMahjongOptions.map((result) => (
-            <button key={result.pattern.id} type="button" onClick={() => onDeclareMahjong(result)}>
-              Declare Mahjong — {result.pattern.displayPattern} ({result.points} pts)
-            </button>
-          ))}
+          {!hasCard ? (
+            <p className="mahjong-hint">Load a card to enable mahjong declarations (see the card-upload screen).</p>
+          ) : validMahjongOptions.length > 0 ? (
+            validMahjongOptions.map((result) => (
+              <button key={result.pattern.id} type="button" onClick={() => onDeclareMahjong(result)}>
+                Declare Mahjong — {result.pattern.displayPattern} ({result.points} pts)
+              </button>
+            ))
+          ) : closestPatternInfo ? (
+            <p className="mahjong-hint">
+              Not there yet — closest pattern is "{closestPatternInfo.displayPattern}",{' '}
+              {closestPatternInfo.tilesAway} tile(s) away.
+            </p>
+          ) : null}
         </div>
       )}
 
