@@ -1,6 +1,7 @@
 import { Board } from './ui/Board'
 import { CardLoader } from './ui/CardLoader'
 import { CharlestonScreen } from './ui/CharlestonScreen'
+import { useCoach } from './ui/useCoach'
 import { useMahjongGame } from './ui/useMahjongGame'
 import './ui/board.css'
 
@@ -8,9 +9,11 @@ function App() {
   const {
     phase,
     hasCard,
+    patterns,
     cardError,
     charleston,
     game,
+    sessionId,
     humanSeat,
     selectedIds,
     validMahjongOptions,
@@ -26,6 +29,8 @@ function App() {
     takeCallAsHuman,
     passHumanCall,
   } = useMahjongGame()
+
+  const coach = useCoach(sessionId)
 
   return (
     <main>
@@ -71,6 +76,14 @@ function App() {
           onTakeCall={takeCallAsHuman}
           onPassCall={passHumanCall}
           onNewGame={startGame}
+          coach={{
+            isConfigured: coach.isConfigured,
+            loading: coach.loading,
+            advice: coach.advice,
+            error: coach.error,
+            onRequestCoach: () => patterns && coach.requestCoach(patterns, game.hands[humanSeat]),
+            onDismiss: coach.dismiss,
+          }}
         />
       )}
     </main>

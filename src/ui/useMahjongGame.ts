@@ -34,6 +34,7 @@ export function useMahjongGame() {
   const [game, setGame] = useState<GameState | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [humanCallPrompt, setHumanCallPrompt] = useState<HumanCallPrompt | null>(null)
+  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID())
 
   const phase: AppPhase = game ? (game.phase === 'ended' ? 'ended' : 'playing') : charleston ? 'charleston' : 'idle'
   const hasCard = patterns !== null
@@ -53,6 +54,7 @@ export function useMahjongGame() {
     setGame(null)
     setSelectedIds(new Set())
     setHumanCallPrompt(null)
+    setSessionId(crypto.randomUUID())
   }, [])
 
   const toggleTileSelection = useCallback((tileId: string) => {
@@ -239,6 +241,7 @@ export function useMahjongGame() {
     cardError,
     charleston,
     game,
+    sessionId,
     humanSeat: HUMAN_SEAT,
     selectedIds,
     validMahjongOptions,

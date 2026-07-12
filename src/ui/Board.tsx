@@ -2,6 +2,7 @@ import type { CallOption } from '../engine/calls'
 import type { MahjongResult } from '../engine/scoring'
 import type { GameState, SeatIndex } from '../engine/table'
 import { CallPrompt } from './CallPrompt'
+import { CoachPanel } from './CoachPanel'
 import { Hand } from './Hand'
 import { Legend } from './Legend'
 import { useOrderedTiles } from './useOrderedTiles'
@@ -22,6 +23,14 @@ export interface BoardProps {
   onTakeCall: (option: CallOption) => void
   onPassCall: () => void
   onNewGame: () => void
+  coach: {
+    isConfigured: boolean
+    loading: boolean
+    advice: string | null
+    error: string | null
+    onRequestCoach: () => void
+    onDismiss: () => void
+  }
 }
 
 export function Board({
@@ -37,6 +46,7 @@ export function Board({
   onTakeCall,
   onPassCall,
   onNewGame,
+  coach,
 }: BoardProps) {
   const humanTurn = game.currentSeat === humanSeat && game.phase === 'discard' && !humanCallPrompt
   const [orderedHumanTiles, moveHumanTile] = useOrderedTiles(game.hands[humanSeat].concealedTiles)
@@ -110,6 +120,17 @@ export function Board({
           onReorder={moveHumanTile}
         />
       </div>
+
+      {humanTurn && hasCard && (
+        <CoachPanel
+          isConfigured={coach.isConfigured}
+          loading={coach.loading}
+          advice={coach.advice}
+          error={coach.error}
+          onRequestCoach={coach.onRequestCoach}
+          onDismiss={coach.onDismiss}
+        />
+      )}
 
       {humanTurn && (
         <div className="mahjong-options">

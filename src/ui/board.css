@@ -138,6 +138,56 @@
   margin: 0;
 }
 
+.coach-panel {
+  margin: 1rem 0;
+}
+
+.coach-panel button {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+}
+
+.coach-panel button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.coach-hint {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin: 0.35rem 0 0;
+}
+
+.coach-response {
+  background: #f3e8ff;
+  border: 1px solid #7c3aed;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.coach-response p {
+  margin: 0 0 0.5rem;
+}
+
+.coach-error {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.coach-dismiss {
+  background: transparent !important;
+  color: inherit !important;
+  border: 1px solid currentColor !important;
+  font-weight: 400 !important;
+  padding: 0.25rem 0.6rem !important;
+  font-size: 0.8rem;
+}
+
 .call-prompt {
   background: #dbeafe;
   border: 1px solid #2563eb;
@@ -165,6 +215,14 @@ button {
   .call-prompt {
     background: #1e3a5f;
     border-color: #60a5fa;
+  }
+  .coach-response {
+    background: #2e1065;
+    border-color: #a78bfa;
+    color: #e9d5ff;
+  }
+  .coach-error {
+    color: #f87171;
   }
   .board-outcome {
     background: #422006;
