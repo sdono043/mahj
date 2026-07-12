@@ -1,40 +1,6 @@
 import type { Tile } from '../engine/tiles'
+import { suitAbbrev, suitIcon, tileLabel } from './tileDisplay'
 import './TileView.css'
-
-const HONOR_LABELS: Record<string, string> = {
-  N: 'N',
-  E: 'E',
-  S: 'S',
-  W: 'W',
-  red: 'R',
-  green: 'G',
-  white: 'Wh',
-}
-
-function tileLabel(tile: Tile): string {
-  if (tile.suit === 'joker') return 'JOKER'
-  if (tile.suit === 'flower') return 'FL'
-  if (tile.value !== undefined) return String(tile.value)
-  if (tile.honor !== undefined) return HONOR_LABELS[tile.honor] ?? tile.honor
-  return '?'
-}
-
-function suitLabel(tile: Tile): string {
-  switch (tile.suit) {
-    case 'dot':
-      return 'DOT'
-    case 'bam':
-      return 'BAM'
-    case 'crak':
-      return 'CRAK'
-    case 'wind':
-      return 'WIND'
-    case 'dragon':
-      return 'DRAGON'
-    default:
-      return ''
-  }
-}
 
 export interface TileViewProps {
   tile: Tile
@@ -61,8 +27,11 @@ export function TileView({ tile, selected = false, faceDown = false, onClick }: 
       disabled={!onClick}
       aria-pressed={selected}
     >
+      <span className="tile-icon" aria-hidden="true">
+        {suitIcon(tile.suit)}
+      </span>
       <span className="tile-label">{tileLabel(tile)}</span>
-      {tile.suit !== 'joker' && tile.suit !== 'flower' && <span className="tile-suit">{suitLabel(tile)}</span>}
+      {tile.suit !== 'joker' && tile.suit !== 'flower' && <span className="tile-suit">{suitAbbrev(tile.suit)}</span>}
     </button>
   )
 }

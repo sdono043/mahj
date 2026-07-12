@@ -1,5 +1,6 @@
 import type { CharlestonSetup } from '../engine/gameSetup'
 import { Hand } from './Hand'
+import { Legend } from './Legend'
 
 const DIRECTION_LABEL: Record<string, string> = {
   right: 'Pass 3 tiles to your right',
@@ -21,6 +22,7 @@ export function CharlestonScreen({ setup, selectedIds, onToggleTile, onSubmitPas
   return (
     <section className="charleston-screen">
       <h2>Charleston</h2>
+      <Legend />
       <p>{direction ? DIRECTION_LABEL[direction] : 'Finishing up…'}</p>
       <p className="charleston-hint">Select exactly 3 tiles ({selectedIds.size}/3 selected)</p>
       <Hand tiles={humanHand} selectedIds={selectedIds} onTileClick={(tile) => onToggleTile(tile.id)} />

@@ -3,6 +3,7 @@ import type { MahjongResult } from '../engine/scoring'
 import type { GameState, SeatIndex } from '../engine/table'
 import { CallPrompt } from './CallPrompt'
 import { Hand } from './Hand'
+import { Legend } from './Legend'
 import type { HumanCallPrompt } from './useMahjongGame'
 
 const SEAT_LABELS = ['You', 'Seat 2', 'Seat 3', 'Seat 4']
@@ -36,6 +37,7 @@ export function Board({
 
   return (
     <section className="board">
+      <Legend />
       <p className="board-status">
         Wall: {game.wall.length} tiles remaining —{' '}
         {game.phase === 'ended'
