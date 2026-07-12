@@ -19,6 +19,10 @@
   font-size: 0.85rem;
   line-height: 1;
   opacity: 0.85;
+  /* Fixed dark tone regardless of theme — the tile face itself stays light/cream
+     in both themes (to read as a physical tile), so this can't inherit the
+     page's dark-mode text color or it becomes invisible against that light face. */
+  color: #444;
 }
 
 .tile-label {
