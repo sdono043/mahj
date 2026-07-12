@@ -1,6 +1,9 @@
-import type { GameState, SeatIndex } from '../engine/table'
+import type { CallOption } from '../engine/calls'
 import type { MahjongResult } from '../engine/scoring'
+import type { GameState, SeatIndex } from '../engine/table'
+import { CallPrompt } from './CallPrompt'
 import { Hand } from './Hand'
+import type { HumanCallPrompt } from './useMahjongGame'
 
 const SEAT_LABELS = ['You', 'Seat 2', 'Seat 3', 'Seat 4']
 
@@ -8,13 +11,28 @@ export interface BoardProps {
   game: GameState
   humanSeat: SeatIndex
   validMahjongOptions: MahjongResult[]
+  humanCallPrompt: HumanCallPrompt | null
   onDiscard: (tileId: string) => void
   onDeclareMahjong: (result: MahjongResult) => void
+  onTakeMahjong: (result: MahjongResult) => void
+  onTakeCall: (option: CallOption) => void
+  onPassCall: () => void
   onNewGame: () => void
 }
 
-export function Board({ game, humanSeat, validMahjongOptions, onDiscard, onDeclareMahjong, onNewGame }: BoardProps) {
-  const humanTurn = game.currentSeat === humanSeat && game.phase === 'discard'
+export function Board({
+  game,
+  humanSeat,
+  validMahjongOptions,
+  humanCallPrompt,
+  onDiscard,
+  onDeclareMahjong,
+  onTakeMahjong,
+  onTakeCall,
+  onPassCall,
+  onNewGame,
+}: BoardProps) {
+  const humanTurn = game.currentSeat === humanSeat && game.phase === 'discard' && !humanCallPrompt
 
   return (
     <section className="board">
@@ -22,9 +40,11 @@ export function Board({ game, humanSeat, validMahjongOptions, onDiscard, onDecla
         Wall: {game.wall.length} tiles remaining —{' '}
         {game.phase === 'ended'
           ? 'Game over'
-          : game.currentSeat === humanSeat
-            ? 'Your turn'
-            : `${SEAT_LABELS[game.currentSeat]}'s turn`}
+          : humanCallPrompt
+            ? 'A discard is up for grabs'
+            : game.currentSeat === humanSeat
+              ? 'Your turn'
+              : `${SEAT_LABELS[game.currentSeat]}'s turn`}
       </p>
 
       {game.outcome && (
@@ -33,6 +53,16 @@ export function Board({ game, humanSeat, validMahjongOptions, onDiscard, onDecla
             ? `${SEAT_LABELS[game.outcome.seat]} declared Mahjong on "${game.outcome.patternId}" for ${game.outcome.points} points!`
             : 'Wall exhausted — no winner this hand.'}
         </p>
+      )}
+
+      {humanCallPrompt && (
+        <CallPrompt
+          prompt={humanCallPrompt}
+          discard={game.pendingDiscard?.tile ?? null}
+          onTakeMahjong={onTakeMahjong}
+          onTakeCall={onTakeCall}
+          onPass={onPassCall}
+        />
       )}
 
       <div className="opponents-row">

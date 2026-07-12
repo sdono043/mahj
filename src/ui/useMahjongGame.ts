@@ -1,21 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CardLoadError, loadCard } from '../engine/cardLoader'
+import { applyCall, type CallOption } from '../engine/calls'
 import { decideCourtesy, submitPass, type CharlestonState } from '../engine/charleston'
+import { closestSeatClockwise } from '../engine/callPriority'
+import { CardLoadError, loadCard } from '../engine/cardLoader'
+import { collectCallCandidates, type CollectedCallCandidates } from '../engine/collectCallCandidates'
 import { beginPlayAfterCharleston, dealForCharleston, type CharlestonSetup } from '../engine/gameSetup'
-import { declareMahjongFromDraw } from '../engine/mahjongDeclaration'
+import { declareMahjongFromDiscard, declareMahjongFromDraw } from '../engine/mahjongDeclaration'
 import type { HandPattern } from '../engine/patterns'
-import { findValidMahjongDeclarations } from '../engine/scoring'
-import { advanceToNextPlayerNaturally, discardTile, drawTile, type GameState, type SeatIndex } from '../engine/table'
-import type { Tile } from '../engine/tiles'
+import { findValidMahjongDeclarations, type MahjongResult } from '../engine/scoring'
+import { advanceToNextPlayerNaturally, discardTile, drawTile, SEATS, type GameState, type SeatIndex } from '../engine/table'
+import { tileKind, type Tile } from '../engine/tiles'
+import { chooseCharlestonPass, chooseDiscard, decideCall } from '../bots/heuristicBot'
 
 export type AppPhase = 'idle' | 'charleston' | 'playing' | 'ended'
 
 const HUMAN_SEAT: SeatIndex = 0
 const BOT_ACTION_DELAY_MS = 600
 
-function randomTiles(hand: readonly Tile[], count: number): Tile[] {
-  const shuffled = [...hand].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, count)
+export interface HumanCallPrompt {
+  mahjongOptions: MahjongResult[]
+  callOptions: CallOption[]
+}
+
+function discardedKindSet(game: GameState): Set<string> {
+  return new Set(game.discards.map((d) => tileKind(d.tile)))
 }
 
 export function useMahjongGame() {
@@ -24,6 +32,7 @@ export function useMahjongGame() {
   const [charleston, setCharleston] = useState<CharlestonSetup | null>(null)
   const [game, setGame] = useState<GameState | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [humanCallPrompt, setHumanCallPrompt] = useState<HumanCallPrompt | null>(null)
 
   const phase: AppPhase = game ? (game.phase === 'ended' ? 'ended' : 'playing') : charleston ? 'charleston' : 'idle'
   const hasCard = patterns !== null
@@ -42,6 +51,7 @@ export function useMahjongGame() {
     setCharleston(dealForCharleston(0, Math.random))
     setGame(null)
     setSelectedIds(new Set())
+    setHumanCallPrompt(null)
   }, [])
 
   const toggleTileSelection = useCallback((tileId: string) => {
@@ -61,8 +71,9 @@ export function useMahjongGame() {
       if (!prev || selectedIds.size !== 3) return prev
       const humanHand = prev.charleston.hands[HUMAN_SEAT]
       const humanSelection = humanHand.filter((t) => selectedIds.has(t.id))
-      const selections = prev.charleston.hands.map((hand, seat) =>
-        seat === HUMAN_SEAT ? humanSelection : randomTiles(hand, 3),
+      const currentPatterns = patterns ?? []
+      const selections = prev.charleston.hands.map((tiles, seat) =>
+        seat === HUMAN_SEAT ? humanSelection : chooseCharlestonPass(tiles, currentPatterns),
       )
       let nextCharleston: CharlestonState = submitPass(prev.charleston, selections)
       // Courtesy round isn't exposed in this UI yet — always decline it so play starts promptly.
@@ -72,7 +83,7 @@ export function useMahjongGame() {
       return { ...prev, charleston: nextCharleston }
     })
     setSelectedIds(new Set())
-  }, [selectedIds])
+  }, [selectedIds, patterns])
 
   useEffect(() => {
     if (charleston && charleston.charleston.phase === 'done') {
@@ -81,15 +92,106 @@ export function useMahjongGame() {
     }
   }, [charleston])
 
-  const discardSelectedTile = useCallback((tileId: string) => {
-    setGame((prev) => {
-      if (!prev || prev.phase !== 'discard' || prev.currentSeat !== HUMAN_SEAT) return prev
-      const discarded = discardTile(prev, tileId)
-      // Call windows aren't wired into this UI yet (arrives with bots in the next milestone) —
-      // every discard is treated as uncalled and play advances immediately.
-      return advanceToNextPlayerNaturally(discarded)
-    })
-  }, [])
+  /**
+   * Resolves the aftermath of any discard (human or bot): the human is
+   * always offered first refusal on anything they're eligible for
+   * (simpler and friendlier than strictly seating-priority-arbitrating
+   * humans against bots); otherwise bots that actually *want* the call
+   * (via the heuristic, not just mechanical eligibility) are resolved by
+   * seating priority, and if nobody wants it, play just advances.
+   */
+  const resolveAfterDiscard = useCallback(
+    (discarded: GameState) => {
+      const currentPatterns = patterns ?? []
+      const candidates: CollectedCallCandidates = collectCallCandidates(discarded, currentPatterns)
+
+      const humanEligible = candidates.mahjongSeats.includes(HUMAN_SEAT) || candidates.callSeats.includes(HUMAN_SEAT)
+      if (humanEligible) {
+        const humanHand = { ...discarded.hands[HUMAN_SEAT], concealedTiles: [...discarded.hands[HUMAN_SEAT].concealedTiles, discarded.pendingDiscard!.tile] }
+        const mahjongOptions = candidates.mahjongSeats.includes(HUMAN_SEAT)
+          ? findValidMahjongDeclarations(currentPatterns, humanHand)
+          : []
+        const callOptions = candidates.callSeats.includes(HUMAN_SEAT) ? candidates.callOptionsBySeat[HUMAN_SEAT] ?? [] : []
+        setGame(discarded)
+        setHumanCallPrompt({ mahjongOptions, callOptions })
+        return
+      }
+
+      setGame(resolveBotOnlyCandidates(discarded, candidates, currentPatterns))
+    },
+    [patterns],
+  )
+
+  function resolveBotOnlyCandidates(
+    discarded: GameState,
+    candidates: CollectedCallCandidates,
+    currentPatterns: readonly HandPattern[],
+  ): GameState {
+    // Bots always take mahjong when eligible.
+    const mahjongWinner = closestSeatClockwise(candidates.discarderSeat, candidates.mahjongSeats)
+    if (mahjongWinner !== null) {
+      const bestPattern = findValidMahjongDeclarations(
+        currentPatterns,
+        { ...discarded.hands[mahjongWinner], concealedTiles: [...discarded.hands[mahjongWinner].concealedTiles, discarded.pendingDiscard!.tile] },
+      )[0]?.pattern
+      if (bestPattern) return declareMahjongFromDiscard(discarded, mahjongWinner, bestPattern)
+    }
+
+    const desiringSeats: SeatIndex[] = []
+    const chosenOptions = new Map<SeatIndex, CallOption>()
+    for (const seat of candidates.callSeats) {
+      const options = candidates.callOptionsBySeat[seat] ?? []
+      const chosen = decideCall(discarded.hands[seat], currentPatterns, discarded.pendingDiscard!.tile, options)
+      if (chosen) {
+        desiringSeats.push(seat)
+        chosenOptions.set(seat, chosen)
+      }
+    }
+    const callWinner = closestSeatClockwise(candidates.discarderSeat, desiringSeats)
+    if (callWinner !== null) {
+      return applyCall(discarded, callWinner, chosenOptions.get(callWinner)!)
+    }
+
+    return advanceToNextPlayerNaturally(discarded)
+  }
+
+  const discardSelectedTile = useCallback(
+    (tileId: string) => {
+      if (!game || game.phase !== 'discard' || game.currentSeat !== HUMAN_SEAT) return
+      resolveAfterDiscard(discardTile(game, tileId))
+    },
+    [game, resolveAfterDiscard],
+  )
+
+  const takeMahjongAsHuman = useCallback(
+    (result: MahjongResult) => {
+      if (!game) return
+      setGame(declareMahjongFromDiscard(game, HUMAN_SEAT, result.pattern))
+      setHumanCallPrompt(null)
+    },
+    [game],
+  )
+
+  const takeCallAsHuman = useCallback(
+    (option: CallOption) => {
+      if (!game) return
+      setGame(applyCall(game, HUMAN_SEAT, option))
+      setHumanCallPrompt(null)
+    },
+    [game],
+  )
+
+  const passHumanCall = useCallback(() => {
+    if (!game || !patterns) return
+    const candidates = collectCallCandidates(game, patterns)
+    const withoutHuman: CollectedCallCandidates = {
+      ...candidates,
+      mahjongSeats: candidates.mahjongSeats.filter((s) => s !== HUMAN_SEAT),
+      callSeats: candidates.callSeats.filter((s) => s !== HUMAN_SEAT),
+    }
+    setGame(resolveBotOnlyCandidates(game, withoutHuman, patterns))
+    setHumanCallPrompt(null)
+  }, [game, patterns])
 
   const declareMahjong = useCallback((pattern: HandPattern) => {
     setGame((prev) => {
@@ -105,25 +207,22 @@ export function useMahjongGame() {
     }
   }, [game])
 
-  // Bot auto-discard: a short delay for pacing, then a random tile.
+  // Bot auto-discard: a short delay for pacing, then the heuristic's chosen tile.
   const botTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
     if (botTimer.current) clearTimeout(botTimer.current)
-    if (game && game.phase === 'discard' && game.currentSeat !== HUMAN_SEAT) {
+    if (game && game.phase === 'discard' && game.currentSeat !== HUMAN_SEAT && !humanCallPrompt) {
+      const seat = game.currentSeat
+      const hand = game.hands[seat]
+      const tile = chooseDiscard(hand, patterns ?? [], discardedKindSet(game))
       botTimer.current = setTimeout(() => {
-        setGame((prev) => {
-          if (!prev || prev.phase !== 'discard' || prev.currentSeat === HUMAN_SEAT) return prev
-          const hand = prev.hands[prev.currentSeat].concealedTiles
-          const [tile] = randomTiles(hand, 1)
-          const discarded = discardTile(prev, tile.id)
-          return advanceToNextPlayerNaturally(discarded)
-        })
+        resolveAfterDiscard(discardTile(game, tile.id))
       }, BOT_ACTION_DELAY_MS)
     }
     return () => {
       if (botTimer.current) clearTimeout(botTimer.current)
     }
-  }, [game])
+  }, [game, patterns, humanCallPrompt, resolveAfterDiscard])
 
   const validMahjongOptions = game && patterns ? findValidMahjongDeclarations(patterns, game.hands[HUMAN_SEAT]) : []
 
@@ -137,11 +236,20 @@ export function useMahjongGame() {
     humanSeat: HUMAN_SEAT,
     selectedIds,
     validMahjongOptions,
+    humanCallPrompt,
     loadCardText,
     startGame,
     toggleTileSelection,
     submitHumanCharlestonPass,
     discardSelectedTile,
     declareMahjong,
+    takeMahjongAsHuman,
+    takeCallAsHuman,
+    passHumanCall,
   }
 }
+
+// SEATS is re-exported for consumers that want to render a full seat list; kept here to avoid
+// UI components importing directly from the engine's table module for a single constant.
+export { SEATS }
+export type { Tile }

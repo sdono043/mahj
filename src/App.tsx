@@ -14,12 +14,16 @@ function App() {
     humanSeat,
     selectedIds,
     validMahjongOptions,
+    humanCallPrompt,
     loadCardText,
     startGame,
     toggleTileSelection,
     submitHumanCharlestonPass,
     discardSelectedTile,
     declareMahjong,
+    takeMahjongAsHuman,
+    takeCallAsHuman,
+    passHumanCall,
   } = useMahjongGame()
 
   return (
@@ -57,8 +61,12 @@ function App() {
           game={game}
           humanSeat={humanSeat}
           validMahjongOptions={validMahjongOptions}
+          humanCallPrompt={humanCallPrompt}
           onDiscard={discardSelectedTile}
           onDeclareMahjong={(result) => declareMahjong(result.pattern)}
+          onTakeMahjong={takeMahjongAsHuman}
+          onTakeCall={takeCallAsHuman}
+          onPassCall={passHumanCall}
           onNewGame={startGame}
         />
       )}

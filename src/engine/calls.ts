@@ -35,6 +35,31 @@ export function getLegalCalls(concealedTiles: readonly Tile[], discard: Tile): C
 }
 
 /**
+ * Pure hand-level simulation of taking a call: removes the matching real
+ * tiles + jokers from `hand`'s concealed tiles and adds the new exposed
+ * meld (discard + those tiles). Used both by `applyCall` (real
+ * application, seat/wall-aware) and by bot decision-making (evaluating a
+ * hypothetical call without touching any GameState).
+ */
+export function simulateCallOnHand(hand: PlayerHand, discard: Tile, option: CallOption): PlayerHand {
+  const discardKind = tileKind(discard)
+  const needed = GROUP_SIZE[option.kind] - 1
+  const realNeeded = needed - option.jokersUsed
+
+  const concealed = [...hand.concealedTiles]
+  const usedTiles: Tile[] = [discard]
+  usedTiles.push(...takeTiles(concealed, (t) => t.suit !== 'joker' && tileKind(t) === discardKind, realNeeded))
+  usedTiles.push(...takeTiles(concealed, (t) => t.suit === 'joker', option.jokersUsed))
+
+  const group: ExposedGroup = { kind: option.kind, tiles: usedTiles }
+  return {
+    concealedTiles: concealed,
+    exposedGroups: [...hand.exposedGroups, group],
+    charlestonPasses: hand.charlestonPasses,
+  }
+}
+
+/**
  * Applies a winning call: removes the matching tiles from the caller's
  * concealed hand, forms the exposed meld (discard + hand tiles), and
  * hands control to the caller — who must discard next (rule: exposing a
@@ -50,31 +75,19 @@ export function applyCall(state: GameState, seat: SeatIndex, option: CallOption)
     throw new Error('A seat cannot call its own discard')
   }
 
-  const discardTile = state.pendingDiscard.tile
-  const discardKind = tileKind(discardTile)
-  const needed = GROUP_SIZE[option.kind] - 1
-  const realNeeded = needed - option.jokersUsed
-
   const hands = cloneHands(state.hands)
-  const hand = hands[seat]
-  const usedTiles: Tile[] = [discardTile]
-
-  usedTiles.push(...takeTiles(hand, (t) => t.suit !== 'joker' && tileKind(t) === discardKind, realNeeded))
-  usedTiles.push(...takeTiles(hand, (t) => t.suit === 'joker', option.jokersUsed))
-
-  const group: ExposedGroup = { kind: option.kind, tiles: usedTiles }
-  hand.exposedGroups.push(group)
+  hands[seat] = simulateCallOnHand(hands[seat], state.pendingDiscard.tile, option)
 
   let wall = state.wall
-  let phase: GamePhase = 'discard'
-  let outcome = state.outcome
+  const phase: GamePhase = 'discard'
+  const outcome = state.outcome
   if (option.kind === 'kong') {
     if (wall.length === 0) {
       return { ...state, hands, phase: 'ended', outcome: { type: 'wall-exhausted' } }
     }
     const replacement = wall[wall.length - 1]
     wall = wall.slice(0, -1)
-    hand.concealedTiles.push(replacement)
+    hands[seat].concealedTiles.push(replacement)
   }
 
   return {
@@ -88,12 +101,12 @@ export function applyCall(state: GameState, seat: SeatIndex, option: CallOption)
   }
 }
 
-function takeTiles(hand: PlayerHand, predicate: (t: Tile) => boolean, count: number): Tile[] {
+function takeTiles(pool: Tile[], predicate: (t: Tile) => boolean, count: number): Tile[] {
   const taken: Tile[] = []
   for (let i = 0; i < count; i++) {
-    const index = hand.concealedTiles.findIndex(predicate)
+    const index = pool.findIndex(predicate)
     if (index === -1) throw new Error('Not enough matching tiles in hand to complete this call')
-    taken.push(...hand.concealedTiles.splice(index, 1))
+    taken.push(...pool.splice(index, 1))
   }
   return taken
 }
