@@ -28,6 +28,7 @@ const TEAMS = [
     support: ["Blair", "Catherine"],
     tasks: ["Shop", "Assemble grazing table", "Keep it replenished before dinner"],
     note: "Overlaps with the Bar team — coordinate together.",
+    anchorLink: { href: "#grazing-table", label: "View shopping list" },
   },
   {
     id: "bar",
@@ -206,6 +207,11 @@ function renderTeams() {
       ${
         team.textTemplate
           ? `<button class="copy-btn" data-copy="${escapeAttr(team.textTemplate)}">Copy text to ${team.textTo}</button>`
+          : ""
+      }
+      ${
+        team.anchorLink
+          ? `<a class="copy-btn" href="${team.anchorLink.href}">${team.anchorLink.label}</a>`
           : ""
       }
     `;
