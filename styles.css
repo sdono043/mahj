@@ -309,30 +309,6 @@ main {
   font-weight: 500;
 }
 
-.team-card__people {
-  font-size: 0.87rem;
-  color: var(--ink-soft);
-  margin-bottom: 1.1rem;
-  line-height: 1.6;
-}
-
-.team-card__people strong { color: var(--ink); font-weight: 600; }
-
-.badge {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  padding: 0.15rem 0.55rem;
-  border-radius: 999px;
-  margin-left: 0.4rem;
-}
-
-.badge--needs-lead {
-  background: color-mix(in srgb, var(--terracotta) 16%, transparent);
-  color: var(--terracotta-dark);
-}
-
 .team-card__note {
   font-size: 0.82rem;
   font-style: italic;
@@ -401,7 +377,8 @@ main {
   color: var(--ink-soft);
 }
 
-.copy-btn {
+.card-link {
+  display: inline-block;
   align-self: flex-start;
   margin-top: auto;
   border: 1.4px solid var(--terracotta);
@@ -413,11 +390,11 @@ main {
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.copy-btn:hover { background: var(--terracotta); color: var(--paper); }
-.copy-btn.copied { background: var(--olive); border-color: var(--olive); color: var(--paper); }
+.card-link:hover { background: var(--terracotta); color: var(--paper); }
 
 /* ---------- timeline ---------- */
 

@@ -8,34 +8,25 @@ const TEAMS = [
     id: "flowers",
     icon: "🌸",
     name: "Flowers & Decor",
-    lead: "Emily",
-    support: ["Blair", "Gracie (if available)"],
     tasks: [
       "Overall flowers",
       "Tablescape styling",
       "Candles",
       "Final “make it beautiful” pass",
     ],
-    textTemplate:
-      "Would you be willing to be the captain of the flowers & decor? I'll cover whatever we need!",
-    textTo: "Emily",
   },
   {
     id: "grazing",
     icon: "🧀",
     name: "Grazing Table",
-    lead: "Maggie",
-    support: ["Blair", "Catherine"],
     tasks: ["Shop", "Assemble grazing table", "Keep it replenished before dinner"],
-    note: "Overlaps with the Bar team — coordinate together.",
+    note: "Overlaps with the Bar — coordinate together.",
     anchorLink: { href: "#grazing-table", label: "View shopping list" },
   },
   {
     id: "bar",
     icon: "🍷",
     name: "Beverage / Bar",
-    lead: "Maggie",
-    support: [],
     tasks: [
       "Make red & white sangria",
       "Chill wine & cava",
@@ -43,14 +34,12 @@ const TEAMS = [
       "Ice",
       "Garnishes",
     ],
-    note: "Overlaps with the Grazing Table team — coordinate together.",
+    note: "Overlaps with the Grazing Table — coordinate together.",
   },
   {
     id: "cake",
     icon: "🎂",
     name: "Cake",
-    lead: "Morgan Bailey",
-    support: [],
     tasks: [
       "Pick up cake",
       "Cake stand",
@@ -66,8 +55,6 @@ const TEAMS = [
     id: "setup",
     icon: "💪",
     name: "Setup",
-    lead: null,
-    support: [],
     tasks: [
       "Move porch furniture",
       "Hang lanterns",
@@ -81,27 +68,25 @@ const TEAMS = [
     id: "pinata",
     icon: "🎈",
     name: "Piñata",
-    lead: "AM",
-    support: [],
     tasks: [
       "Commission the piñata",
-      "Setup team hangs it",
-      "Cake team coordinates bringing it out",
+      "Hang it during setup",
+      "Time the reveal with the cake",
     ],
-    note: "AM is commissioning it — Setup hangs it, Cake team can time its reveal.",
+    note: "Commissioned ahead of time; hung during setup, with the reveal timed to the cake.",
   },
 ];
 
 const TIMELINE = [
-  { time: "3:00 PM", title: "Setup team arrives", detail: "Move porch furniture, hang lanterns & string lights, set tables." },
+  { time: "3:00 PM", title: "Setup begins", detail: "Move porch furniture, hang lanterns & string lights, set tables." },
   { time: "4:00 PM", title: "Flowers & Decor styling", detail: "Tablescape, candles, final “make it beautiful” pass." },
   { time: "4:30 PM", title: "Grazing table & bar", detail: "Assemble grazing table, stock bar, chill wine & cava, make sangria." },
-  { time: "5:00 PM", title: "Piñata hung, final walkthrough", detail: "Setup team hangs the piñata; quick walk of the whole yard." },
+  { time: "5:00 PM", title: "Piñata hung, final walkthrough", detail: "Piñata hung; quick walk of the whole yard." },
   { time: "5:45 PM", title: "Paella on", detail: "Get the paella going so it's ready not long after guests arrive." },
   { time: "6:00 PM", title: "Guests arrive 🎉", detail: "Welcome drinks, grazing table open." },
   { time: "7:00 PM", title: "Paella served", detail: "Dinner under the string lights." },
-  { time: "8:30 PM", title: "Cake reveal & toast 🎂", detail: "Cake team brings it out, coordinates the toast." },
-  { time: "9:00 PM", title: "Piñata", detail: "Cake team times the reveal moment." },
+  { time: "8:30 PM", title: "Cake reveal & toast 🎂", detail: "Cake brought out, toast coordinated." },
+  { time: "9:00 PM", title: "Piñata", detail: "Reveal timed with the cake." },
   { time: "9:30 PM", title: "Dancing & night breeze", detail: "Keep the lights on and the night going." },
 ];
 
@@ -174,16 +159,6 @@ function renderTeams() {
     const card = document.createElement("article");
     card.className = "team-card";
 
-    const people = [];
-    if (team.lead) {
-      people.push(`<strong>Lead:</strong> ${team.lead}`);
-    } else {
-      people.push(`<strong>Lead:</strong> <span class="badge badge--needs-lead">needs a lead</span>`);
-    }
-    if (team.support.length) {
-      people.push(`<strong>Support:</strong> ${team.support.join(", ")}`);
-    }
-
     const tasksHtml = team.tasks
       .map((task, i) => {
         const id = `${team.id}-${i}`;
@@ -201,17 +176,11 @@ function renderTeams() {
         <span class="team-card__icon">${team.icon}</span>
         <span class="team-card__name">${team.name}</span>
       </div>
-      <div class="team-card__people">${people.join("<br/>")}</div>
       ${team.note ? `<div class="team-card__note">${team.note}</div>` : ""}
       <ul class="task-list">${tasksHtml}</ul>
       ${
-        team.textTemplate
-          ? `<button class="copy-btn" data-copy="${escapeAttr(team.textTemplate)}">Copy text to ${team.textTo}</button>`
-          : ""
-      }
-      ${
         team.anchorLink
-          ? `<a class="copy-btn" href="${team.anchorLink.href}">${team.anchorLink.label}</a>`
+          ? `<a class="card-link" href="${team.anchorLink.href}">${team.anchorLink.label}</a>`
           : ""
       }
     `;
@@ -227,25 +196,6 @@ function renderTeams() {
       updateOverallProgress();
     }
   });
-
-  grid.addEventListener("click", (e) => {
-    const btn = e.target.closest(".copy-btn");
-    if (!btn) return;
-    const text = btn.dataset.copy;
-    navigator.clipboard?.writeText(text).then(() => {
-      btn.classList.add("copied");
-      const original = btn.textContent;
-      btn.textContent = "Copied!";
-      setTimeout(() => {
-        btn.classList.remove("copied");
-        btn.textContent = original;
-      }, 1600);
-    });
-  });
-}
-
-function escapeAttr(str) {
-  return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
 function updateOverallProgress() {
