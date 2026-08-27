@@ -78,9 +78,9 @@ const TEAMS = [
 ];
 
 const TIMELINE = [
-  { time: "3:00 PM", title: "Setup begins", detail: "Move porch furniture, hang lanterns & string lights, set tables." },
   { time: "4:00 PM", title: "Flowers & Decor styling", detail: "Tablescape, candles, final “make it beautiful” pass." },
   { time: "4:30 PM", title: "Grazing table & bar", detail: "Assemble grazing table, stock bar, chill wine & cava, make sangria." },
+  { time: "5:00 PM", title: "Patty arrives", detail: "" },
   { time: "5:00 PM", title: "Piñata hung, final walkthrough", detail: "Piñata hung; quick walk of the whole yard." },
   { time: "5:45 PM", title: "Paella on", detail: "Get the paella going so it's ready not long after guests arrive." },
   { time: "6:00 PM", title: "Guests arrive 🎉", detail: "Welcome drinks, grazing table open." },
