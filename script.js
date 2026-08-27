@@ -1,5 +1,6 @@
 // AM's 40th — Party HQ
-// All state (checked tasks, guest list) persists to localStorage on this device only.
+// The guest list ships pre-seeded with the current RSVPs; edits after that persist to
+// localStorage on this device only. Checked tasks work the same way.
 
 const PARTY_DATE = new Date("2026-09-12T18:00:00");
 
@@ -88,6 +89,38 @@ const TIMELINE = [
   { time: "8:30 PM", title: "Cake reveal & toast 🎂", detail: "Cake brought out, toast coordinated." },
   { time: "9:00 PM", title: "Piñata", detail: "Reveal timed with the cake." },
   { time: "9:30 PM", title: "Dancing & night breeze", detail: "Keep the lights on and the night going." },
+];
+
+const DEFAULT_GUESTS = [
+  { name: "AB & Rob Dickinson", rsvp: "yes", notes: "" },
+  { name: "Elizabeth & John Carrington", rsvp: "yes", notes: "" },
+  { name: "Caley & Alex Wilson", rsvp: "no", notes: "" },
+  { name: "Eden & Brian Fowler", rsvp: "yes", notes: "" },
+  { name: "Christina & Lan Holloway", rsvp: "invited", notes: "Invite sent 14 days ago — consider resending" },
+  { name: "Chris & Britt Harris", rsvp: "no", notes: "" },
+  { name: "Bailey Moyer", rsvp: "no", notes: "" },
+  { name: "Rachel & Jay Amato", rsvp: "yes", notes: "" },
+  { name: "Emily & Patrick Bisceglia", rsvp: "yes", notes: "" },
+  { name: "Maggie & Matt Crisafi", rsvp: "yes", notes: "" },
+  { name: "Amanda & Dave Seibert", rsvp: "yes", notes: "" },
+  { name: "Jenny & Andrew Palmer", rsvp: "yes", notes: "" },
+  { name: "Kristina & David Lee", rsvp: "invited", notes: "Page viewed, no response yet" },
+  { name: "Rachel & Matt Nilson", rsvp: "yes", notes: "" },
+  { name: "Brit & Paul Trible", rsvp: "invited", notes: "Email opened, no response yet" },
+  { name: "Morgan & Manish Patel", rsvp: "yes", notes: "" },
+  { name: "Emily & Brian Wood", rsvp: "yes", notes: "" },
+  { name: "Jen & Bahnsen Miller", rsvp: "yes", notes: "" },
+  { name: "Cathy & Drew Shiembob", rsvp: "yes", notes: "" },
+  { name: "Kelsey & Kevin Alas", rsvp: "yes", notes: "" },
+  { name: "Amanda & Devin OMalley", rsvp: "yes", notes: "" },
+  { name: "Gracie & Richard Graham", rsvp: "yes", notes: "" },
+  { name: "Krista & Brendan Donohoe", rsvp: "yes", notes: "" },
+  { name: "Laura & Ryan Considine", rsvp: "yes", notes: "" },
+  { name: "Alexis & Gustavo Martirosian", rsvp: "yes", notes: "" },
+  { name: "William & Blair Adams", rsvp: "invited", notes: "Page viewed, no response yet" },
+  { name: "Amanda & Quentin Ward", rsvp: "yes", notes: "" },
+  { name: "Catherine & Keith Muth", rsvp: "yes", notes: "" },
+  { name: "Bailey & Kevin Carson", rsvp: "yes", notes: "" },
 ];
 
 const STORAGE_TASKS = "am40-tasks";
@@ -230,9 +263,11 @@ function renderTimeline() {
 
 function loadGuests() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_GUESTS)) || [];
+    const raw = localStorage.getItem(STORAGE_GUESTS);
+    if (raw === null) return DEFAULT_GUESTS.slice();
+    return JSON.parse(raw) || [];
   } catch {
-    return [];
+    return DEFAULT_GUESTS.slice();
   }
 }
 
