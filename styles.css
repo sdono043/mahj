@@ -598,6 +598,161 @@ main {
   line-height: 1.6;
 }
 
+/* ---------- cocktail menu ---------- */
+
+.cocktail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.cocktail-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.5rem 1.2rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.cocktail-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-bottom: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.cocktail-card__icon { font-size: 1.4rem; line-height: 1; }
+
+.cocktail-card__name {
+  font-family: "Fraunces", serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.cocktail-card__tag {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--olive-dark);
+  background: color-mix(in srgb, var(--olive) 14%, transparent);
+  border-radius: 999px;
+  padding: 0.18rem 0.6rem;
+}
+
+.cocktail-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  flex-grow: 1;
+}
+
+.cocktail-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  font-size: 0.9rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+.cocktail-list li:last-child { border-bottom: none; }
+
+.cocktail-qty {
+  flex: 0 0 auto;
+  font-weight: 600;
+  color: var(--terracotta-dark);
+  min-width: 3.6em;
+}
+
+.cocktail-item { flex: 1 1 auto; }
+
+.cocktail-card__serve {
+  border-top: 1px solid var(--border);
+  padding-top: 0.7rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- detail sections (per-team setup/location) ---------- */
+
+.detail-notes {
+  background: color-mix(in srgb, var(--olive) 10%, transparent);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.5rem;
+}
+
+.detail-rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 0.8rem;
+  align-items: baseline;
+}
+
+.detail-row dt {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--olive-dark);
+}
+
+.detail-row dd {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.detail-row a { color: var(--terracotta-dark); }
+
+/* ---------- setup & logistics map note ---------- */
+
+.map-note {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.6rem;
+  box-shadow: var(--shadow);
+}
+
+.map-note p {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.map-note code {
+  background: color-mix(in srgb, var(--olive) 16%, transparent);
+  border-radius: 5px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.85em;
+}
+
+.map-note ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.92rem;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+.map-note ul strong { color: var(--terracotta-dark); }
+
+@media (max-width: 640px) {
+  .detail-row { grid-template-columns: 1fr; gap: 0.15rem; }
+}
+
 /* ---------- guest list ---------- */
 
 .guest-summary {

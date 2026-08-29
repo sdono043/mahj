@@ -15,6 +15,7 @@ const TEAMS = [
       "Candles",
       "Final “make it beautiful” pass",
     ],
+    anchorLink: { href: "#detail-flowers", label: "View setup details" },
   },
   {
     id: "grazing",
@@ -36,6 +37,7 @@ const TEAMS = [
       "Garnishes",
     ],
     note: "Overlaps with the Grazing Table — coordinate together.",
+    anchorLink: { href: "#bar-cocktails", label: "View cocktail menu" },
   },
   {
     id: "cake",
@@ -51,6 +53,7 @@ const TEAMS = [
       "Coordinate the toast",
     ],
     note: "The reveal moment — keep it a fun surprise!",
+    anchorLink: { href: "#detail-cake", label: "View setup details" },
   },
   {
     id: "setup",
@@ -64,6 +67,7 @@ const TEAMS = [
       "Put out candles",
       "General setup",
     ],
+    anchorLink: { href: "#detail-setup", label: "View setup details" },
   },
   {
     id: "pinata",
@@ -75,6 +79,7 @@ const TEAMS = [
       "Time the reveal with the cake",
     ],
     note: "Commissioned ahead of time; hung during setup, with the reveal timed to the cake.",
+    anchorLink: { href: "#detail-pinata", label: "View setup details" },
   },
 ];
 
