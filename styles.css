@@ -598,6 +598,13 @@ main {
   line-height: 1.6;
 }
 
+.subhead {
+  font-family: "Fraunces", serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 2.6rem 0 0.4rem;
+}
+
 /* ---------- cocktail menu ---------- */
 
 .cocktail-grid {
