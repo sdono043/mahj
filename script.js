@@ -44,6 +44,8 @@ const TEAMS = [
     icon: "🎂",
     name: "Cake",
     tasks: [
+      "Call Pearl's Bake Shoppe — ask about a chocolate cake option & sizing for 48",
+      "Order cake",
       "Pick up cake",
       "Cake stand",
       "Candles",
