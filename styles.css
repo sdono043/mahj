@@ -776,6 +776,7 @@ main {
   border: 1px solid var(--border);
 }
 
+.yard-map img,
 .yard-map svg { display: block; width: 100%; height: auto; }
 
 .map-note__caption {
