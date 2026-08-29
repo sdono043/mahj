@@ -732,6 +732,24 @@ main {
   line-height: 1.6;
 }
 
+.yard-map {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border);
+}
+
+.yard-map svg { display: block; width: 100%; height: auto; }
+
+.map-note__caption {
+  margin: 0 0 0.8rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.map-note__caption:last-child { margin: 1rem 0 0; font-style: italic; }
+
 .map-note code {
   background: color-mix(in srgb, var(--olive) 16%, transparent);
   border-radius: 5px;
