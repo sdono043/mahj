@@ -303,12 +303,14 @@ function noteIsNew(data) {
   return created > notesSeenAt;
 }
 
-function noteCardHtml(data) {
+function noteCardHtml(doc, replyCount) {
+  const data = doc.data();
   const when = data.createdAt?.toDate ? data.createdAt.toDate() : null;
   const whenStr = when
     ? when.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
     : "just now";
   const isNew = noteIsNew(data);
+  const replyLabel = replyCount > 0 ? `${replyCount} repl${replyCount === 1 ? "y" : "ies"}` : "Reply";
   return `
     <div class="note-card ${isNew ? "note-card--new" : ""}">
       <div class="note-card__head">
@@ -316,6 +318,7 @@ function noteCardHtml(data) {
         <span class="note-card__time">${isNew ? '<span class="note-card__new-badge">NEW</span>' : ""}${whenStr}</span>
       </div>
       <p class="note-card__text">${escapeHtml(data.text)}</p>
+      <a class="note-card__reply-link" href="/mahj/notes/#note-${doc.id}" target="_blank" rel="noopener">${replyLabel} →</a>
     </div>`;
 }
 
@@ -345,16 +348,22 @@ function buildSectionNoteWidgets() {
       const name = details.querySelector("[data-note-name]").value.trim();
       const text = details.querySelector("[data-note-text]").value.trim();
       if (!name || !text) return;
-      addDoc(collection(db, "notes"), { name, text, section: sec.id, createdAt: serverTimestamp() })
+      addDoc(collection(db, "notes"), { name, text, section: sec.id, parentId: null, createdAt: serverTimestamp() })
         .then(() => e.target.reset())
         .catch((err) => console.error("Failed to post note", err));
     });
   });
 }
 
+function countReplies(allDocs, noteId) {
+  return allDocs.filter((d) => d.data().parentId === noteId).length;
+}
+
 function renderAllNotes(allDocs) {
+  const topLevel = allDocs.filter((d) => !d.data().parentId);
+
   // General / catch-all board at the top of the page.
-  const generalDocs = allDocs.filter((d) => !d.data().section || d.data().section === "general");
+  const generalDocs = topLevel.filter((d) => !d.data().section || d.data().section === "general");
   const list = document.getElementById("notes-list");
   const empty = document.getElementById("notes-empty");
   if (!generalDocs.length) {
@@ -362,22 +371,27 @@ function renderAllNotes(allDocs) {
     empty.style.display = "block";
   } else {
     empty.style.display = "none";
-    list.innerHTML = generalDocs.map((d) => noteCardHtml(d.data())).join("");
+    list.innerHTML = generalDocs.map((d) => noteCardHtml(d, countReplies(allDocs, d.id))).join("");
   }
 
   // Per-section widgets.
   NOTE_SECTIONS.forEach((sec) => {
     const widget = document.querySelector(`.section-notes[data-section="${sec.id}"]`);
     if (!widget) return;
-    const docsForSection = allDocs.filter((d) => d.data().section === sec.id);
+    const docsForSection = topLevel.filter((d) => d.data().section === sec.id);
     const listEl = widget.querySelector("[data-notes-list]");
     listEl.innerHTML = docsForSection.length
-      ? docsForSection.map((d) => noteCardHtml(d.data())).join("")
+      ? docsForSection.map((d) => noteCardHtml(d, countReplies(allDocs, d.id))).join("")
       : '<p class="notes-empty-inline">No notes yet for this section.</p>';
 
+    // Count this section's notes AND any replies to them for the badge/auto-open.
+    const sectionNoteIds = new Set(docsForSection.map((d) => d.id));
+    const repliesToSection = allDocs.filter((d) => sectionNoteIds.has(d.data().parentId));
     const countEl = widget.querySelector("[data-count]");
-    countEl.textContent = docsForSection.length ? String(docsForSection.length) : "";
-    const hasNew = docsForSection.some((d) => noteIsNew(d.data()));
+    const total = docsForSection.length + repliesToSection.length;
+    countEl.textContent = total ? String(total) : "";
+    const hasNew =
+      docsForSection.some((d) => noteIsNew(d.data())) || repliesToSection.some((d) => noteIsNew(d.data()));
     countEl.classList.toggle("section-notes__count--new", hasNew);
     if (hasNew) widget.open = true;
   });
@@ -407,7 +421,7 @@ function setupNotesHandlers() {
     const name = document.getElementById("note-name").value.trim();
     const text = document.getElementById("note-text").value.trim();
     if (!name || !text) return;
-    addDoc(collection(db, "notes"), { name, text, section: "general", createdAt: serverTimestamp() })
+    addDoc(collection(db, "notes"), { name, text, section: "general", parentId: null, createdAt: serverTimestamp() })
       .then(() => form.reset())
       .catch((err) => console.error("Failed to post note", err));
   });
