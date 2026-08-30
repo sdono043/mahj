@@ -277,55 +277,137 @@ function updateOverallProgress() {
   document.getElementById("overall-count").textContent = `${done} / ${totalTasks} tasks`;
 }
 
-/* ---------- notes & suggestions (synced live via Firestore) ---------- */
+/* ---------- notes & suggestions, per section (synced live via Firestore) ---------- */
 
-function renderNotes(docs) {
+// Sections (beyond the general board) that get their own notes widget.
+const NOTE_SECTIONS = [
+  { id: "detail-flowers", label: "Flowers & Decor" },
+  { id: "grazing-table", label: "Grazing Table" },
+  { id: "bar-cocktails", label: "Cocktail Menu" },
+  { id: "detail-cake", label: "Cake" },
+  { id: "detail-setup", label: "Setup" },
+  { id: "detail-pinata", label: "Piñata" },
+  { id: "setup-logistics", label: "Yard Map & Logistics" },
+  { id: "timeline", label: "Day-Of Timeline" },
+];
+
+// "Seen" watermark for showing NEW badges — updated once per page load, after the
+// first snapshot renders, so this visit still sees badges for anything posted
+// since the *previous* visit.
+const NOTES_SEEN_KEY = "am40-notes-seen-at";
+const notesSeenAt = Number(localStorage.getItem(NOTES_SEEN_KEY) || 0);
+let notesSeenAtWritten = false;
+
+function noteIsNew(data) {
+  const created = data.createdAt?.toMillis ? data.createdAt.toMillis() : 0;
+  return created > notesSeenAt;
+}
+
+function noteCardHtml(data) {
+  const when = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+  const whenStr = when
+    ? when.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
+    : "just now";
+  const isNew = noteIsNew(data);
+  return `
+    <div class="note-card ${isNew ? "note-card--new" : ""}">
+      <div class="note-card__head">
+        <span class="note-card__name">${escapeHtml(data.name)}</span>
+        <span class="note-card__time">${isNew ? '<span class="note-card__new-badge">NEW</span>' : ""}${whenStr}</span>
+      </div>
+      <p class="note-card__text">${escapeHtml(data.text)}</p>
+    </div>`;
+}
+
+function buildSectionNoteWidgets() {
+  NOTE_SECTIONS.forEach((sec) => {
+    const host = document.getElementById(sec.id);
+    if (!host) return;
+
+    const details = document.createElement("details");
+    details.className = "section-notes";
+    details.dataset.section = sec.id;
+    details.innerHTML = `
+      <summary>💬 Notes for this section <span class="section-notes__count" data-count></span></summary>
+      <div class="section-notes__body">
+        <form class="notes-form-mini">
+          <input type="text" data-note-name placeholder="Your name" required />
+          <textarea data-note-text rows="2" placeholder="Question or suggestion for this section…" required></textarea>
+          <button type="submit">Post</button>
+        </form>
+        <div class="section-notes__list" data-notes-list></div>
+      </div>
+    `;
+    host.appendChild(details);
+
+    details.querySelector("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = details.querySelector("[data-note-name]").value.trim();
+      const text = details.querySelector("[data-note-text]").value.trim();
+      if (!name || !text) return;
+      addDoc(collection(db, "notes"), { name, text, section: sec.id, createdAt: serverTimestamp() })
+        .then(() => e.target.reset())
+        .catch((err) => console.error("Failed to post note", err));
+    });
+  });
+}
+
+function renderAllNotes(allDocs) {
+  // General / catch-all board at the top of the page.
+  const generalDocs = allDocs.filter((d) => !d.data().section || d.data().section === "general");
   const list = document.getElementById("notes-list");
   const empty = document.getElementById("notes-empty");
-
-  if (!docs.length) {
+  if (!generalDocs.length) {
     list.innerHTML = "";
     empty.style.display = "block";
-    return;
+  } else {
+    empty.style.display = "none";
+    list.innerHTML = generalDocs.map((d) => noteCardHtml(d.data())).join("");
   }
-  empty.style.display = "none";
 
-  list.innerHTML = docs
-    .map((d) => {
-      const data = d.data();
-      const when = data.createdAt?.toDate ? data.createdAt.toDate() : null;
-      const whenStr = when
-        ? when.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
-        : "just now";
-      return `
-        <div class="note-card">
-          <div class="note-card__head">
-            <span class="note-card__name">${escapeHtml(data.name)}</span>
-            <span class="note-card__time">${whenStr}</span>
-          </div>
-          <p class="note-card__text">${escapeHtml(data.text)}</p>
-        </div>`;
-    })
-    .join("");
+  // Per-section widgets.
+  NOTE_SECTIONS.forEach((sec) => {
+    const widget = document.querySelector(`.section-notes[data-section="${sec.id}"]`);
+    if (!widget) return;
+    const docsForSection = allDocs.filter((d) => d.data().section === sec.id);
+    const listEl = widget.querySelector("[data-notes-list]");
+    listEl.innerHTML = docsForSection.length
+      ? docsForSection.map((d) => noteCardHtml(d.data())).join("")
+      : '<p class="notes-empty-inline">No notes yet for this section.</p>';
+
+    const countEl = widget.querySelector("[data-count]");
+    countEl.textContent = docsForSection.length ? String(docsForSection.length) : "";
+    const hasNew = docsForSection.some((d) => noteIsNew(d.data()));
+    countEl.classList.toggle("section-notes__count--new", hasNew);
+    if (hasNew) widget.open = true;
+  });
 }
 
 function watchNotes() {
   const notesQuery = query(collection(db, "notes"), orderBy("createdAt", "desc"));
   onSnapshot(
     notesQuery,
-    (snap) => renderNotes(snap.docs),
+    (snap) => {
+      renderAllNotes(snap.docs);
+      if (!notesSeenAtWritten) {
+        notesSeenAtWritten = true;
+        localStorage.setItem(NOTES_SEEN_KEY, String(Date.now()));
+      }
+    },
     (err) => console.error("Notes sync error", err)
   );
 }
 
 function setupNotesHandlers() {
+  buildSectionNoteWidgets();
+
   const form = document.getElementById("notes-form");
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const name = document.getElementById("note-name").value.trim();
     const text = document.getElementById("note-text").value.trim();
     if (!name || !text) return;
-    addDoc(collection(db, "notes"), { name, text, createdAt: serverTimestamp() })
+    addDoc(collection(db, "notes"), { name, text, section: "general", createdAt: serverTimestamp() })
       .then(() => form.reset())
       .catch((err) => console.error("Failed to post note", err));
   });

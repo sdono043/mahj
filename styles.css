@@ -877,6 +877,126 @@ html.show-prices .grazing-total { display: block; }
   margin: 0;
 }
 
+.note-card--new { border-color: var(--terracotta); }
+
+.note-card__new-badge {
+  display: inline-block;
+  background: var(--terracotta);
+  color: var(--paper);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  padding: 0.05rem 0.42rem;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+/* ---------- per-section notes widget ---------- */
+
+.section-notes {
+  margin-top: 1.8rem;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.2rem;
+  box-shadow: var(--shadow);
+}
+
+.section-notes summary {
+  cursor: pointer;
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: 0.96rem;
+  color: var(--olive-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  list-style: none;
+}
+
+.section-notes summary::-webkit-details-marker { display: none; }
+
+.section-notes summary::before {
+  content: "▸";
+  font-size: 0.8rem;
+  transition: transform 0.15s ease;
+}
+
+.section-notes[open] summary::before { transform: rotate(90deg); }
+
+.section-notes__count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  background: color-mix(in srgb, var(--olive) 16%, transparent);
+  border-radius: 999px;
+  padding: 0.08rem 0.55rem;
+}
+
+.section-notes__count:empty { display: none; }
+
+.section-notes__count--new {
+  color: var(--paper);
+  background: var(--terracotta);
+}
+
+.section-notes__body {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--border);
+}
+
+.notes-form-mini {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.notes-form-mini input[type="text"],
+.notes-form-mini textarea {
+  font-family: "Archivo", sans-serif;
+  font-size: 0.86rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--cream);
+  color: var(--ink);
+  resize: vertical;
+}
+
+.notes-form-mini input[type="text"] { flex: 1 1 140px; }
+.notes-form-mini textarea { flex: 1 1 100%; }
+
+.notes-form-mini button {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  background: var(--terracotta);
+  color: var(--paper);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.15s ease;
+}
+
+.notes-form-mini button:hover { background: var(--terracotta-dark); }
+
+.section-notes__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.notes-empty-inline {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
 /* ---------- guest list ---------- */
 
 .guest-summary {
