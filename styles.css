@@ -530,6 +530,7 @@ main {
   font-variant-numeric: tabular-nums;
   color: var(--ink-soft);
   font-size: 0.86rem;
+  display: none;
 }
 
 .grazing-card__subtotal {
@@ -537,9 +538,15 @@ main {
   padding-top: 0.7rem;
   font-size: 0.88rem;
   color: var(--ink-soft);
-  display: flex;
+  display: none;
   justify-content: space-between;
 }
+
+.grazing-total { display: none; }
+
+html.show-prices .grazing-price { display: inline; }
+html.show-prices .grazing-card__subtotal { display: flex; }
+html.show-prices .grazing-total { display: block; }
 
 .grazing-card__subtotal strong {
   color: var(--ink);

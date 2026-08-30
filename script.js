@@ -62,7 +62,6 @@ const TEAMS = [
     icon: "💪",
     name: "Setup",
     tasks: [
-      "Move porch furniture",
       "Hang lanterns",
       "String lights",
       "Set tables",
@@ -86,7 +85,7 @@ const TEAMS = [
 ];
 
 const TIMELINE = [
-  { time: "11:00 AM – 3:00 PM", title: "Setup", detail: "Move porch furniture, hang lanterns & string lights, set tables, put out candles." },
+  { time: "11:00 AM – 3:00 PM", title: "Setup", detail: "Hang lanterns & string lights, set tables, put out candles — making it all beautiful." },
   { time: "2:00 PM", title: "Flowers & Decor styling", detail: "Tablescape, candles, final “make it beautiful” pass." },
   { time: "5:00 PM", title: "Patty arrives — grazing table & bar", detail: "Assemble grazing table, stock bar, chill wine, cava & champagne, make sangria." },
   { time: "5:00 PM", title: "Piñata hung, final walkthrough", detail: "Piñata hung; quick walk of the whole yard." },

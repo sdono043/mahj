@@ -23,6 +23,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Build price-visible copy at /prices
+        run: |
+          mkdir -p prices
+          cp index.html styles.css script.js prices/
+          cp -r assets prices/assets
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
