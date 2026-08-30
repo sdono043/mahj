@@ -408,7 +408,7 @@ main {
 .timeline::before {
   content: "";
   position: absolute;
-  left: 86px;
+  left: 114px;
   top: 6px;
   bottom: 6px;
   width: 2px;
@@ -417,7 +417,7 @@ main {
 
 .timeline li {
   display: grid;
-  grid-template-columns: 72px 28px 1fr;
+  grid-template-columns: 100px 28px 1fr;
   align-items: start;
   gap: 0.4rem;
   padding: 0.85rem 0;

@@ -44,7 +44,7 @@ const TEAMS = [
     icon: "🎂",
     name: "Cake",
     tasks: [
-      "Call Pearl's Bake Shoppe — ask about a chocolate cake option & sizing for 48",
+      "Call Pearl's Bake Shoppe — confirm Gone Coco Cake sizing for 48",
       "Order cake",
       "Pick up cake",
       "Cake stand",
@@ -86,6 +86,7 @@ const TEAMS = [
 ];
 
 const TIMELINE = [
+  { time: "11:00 AM – 3:00 PM", title: "Setup", detail: "Move porch furniture, hang lanterns & string lights, set tables, put out candles." },
   { time: "2:00 PM", title: "Flowers & Decor styling", detail: "Tablescape, candles, final “make it beautiful” pass." },
   { time: "5:00 PM", title: "Patty arrives — grazing table & bar", detail: "Assemble grazing table, stock bar, chill wine, cava & champagne, make sangria." },
   { time: "5:00 PM", title: "Piñata hung, final walkthrough", detail: "Piñata hung; quick walk of the whole yard." },
