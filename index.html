@@ -70,8 +70,22 @@
 
   <section class="section" id="teams">
     <h2 class="section__title">Planning Checklist</h2>
-    <p class="section__subtitle">Tap a task when it's done — your progress is saved on this device.</p>
+    <p class="section__subtitle">Tap a task when it's done — shared live with everyone viewing this page.</p>
     <div class="team-grid" id="team-grid"></div>
+  </section>
+
+  <section class="section" id="notes-board">
+    <h2 class="section__title">Notes &amp; Suggestions</h2>
+    <p class="section__subtitle">Flag anything missing or leave a note for the group — visible to everyone, updates live.</p>
+
+    <form class="notes-form" id="notes-form">
+      <input type="text" id="note-name" placeholder="Your name" required />
+      <textarea id="note-text" rows="2" placeholder="What's on your mind?" required></textarea>
+      <button type="submit">Post</button>
+    </form>
+
+    <div class="notes-list" id="notes-list"></div>
+    <p class="notes-empty" id="notes-empty">No notes yet — be the first!</p>
   </section>
 
   <section class="section" id="detail-flowers">
@@ -524,6 +538,6 @@
   <p>Built for AM's 40th &middot; Sept 12, 6:00 PM &middot; the backyard 🌸</p>
 </footer>
 
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>

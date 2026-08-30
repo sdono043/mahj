@@ -1,6 +1,32 @@
 // AM's 40th — Party HQ
-// The guest list ships pre-seeded with the current RSVPs; edits after that persist to
-// localStorage on this device only. Checked tasks work the same way.
+// Checked tasks and notes sync live for everyone via Firestore. The guest list still
+// ships pre-seeded with the current RSVPs, but edits to it persist to localStorage on
+// this device only (not yet shared).
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  onSnapshot,
+  setDoc,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  serverTimestamp,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAkyLuQDuq7v9E3G9j8V9UygoRBIFdWDCY",
+  authDomain: "am-40th-party.firebaseapp.com",
+  projectId: "am-40th-party",
+  storageBucket: "am-40th-party.firebasestorage.app",
+  messagingSenderId: "999828518053",
+  appId: "1:999828518053:web:bed02130dc83a7af77494c",
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
 const PARTY_DATE = new Date("2026-09-12T18:00:00");
 
@@ -129,7 +155,6 @@ const DEFAULT_GUESTS = [
   { name: "Bailey & Kevin Carson", rsvp: "yes", notes: "" },
 ];
 
-const STORAGE_TASKS = "am40-tasks";
 const STORAGE_GUESTS = "am40-guests";
 
 /* ---------- string lights ---------- */
@@ -176,23 +201,14 @@ function tickCountdown() {
   els.secs.textContent = String(secs).padStart(2, "0");
 }
 
-/* ---------- task state ---------- */
+/* ---------- task state (synced live via Firestore) ---------- */
 
-function loadTaskState() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_TASKS)) || {};
-  } catch {
-    return {};
-  }
-}
-
-function saveTaskState(state) {
-  localStorage.setItem(STORAGE_TASKS, JSON.stringify(state));
-}
+const TASKS_DOC = doc(db, "state", "tasks");
+let taskState = {};
 
 function renderTeams() {
   const grid = document.getElementById("team-grid");
-  const state = loadTaskState();
+  grid.innerHTML = "";
 
   TEAMS.forEach((team) => {
     const card = document.createElement("article");
@@ -201,7 +217,7 @@ function renderTeams() {
     const tasksHtml = team.tasks
       .map((task, i) => {
         const id = `${team.id}-${i}`;
-        const checked = state[id] ? "checked" : "";
+        const checked = taskState[id] ? "checked" : "";
         return `
           <li>
             <input type="checkbox" id="${id}" data-team="${team.id}" ${checked} />
@@ -226,29 +242,93 @@ function renderTeams() {
 
     grid.appendChild(card);
   });
+}
 
+function setupTeamHandlers() {
+  const grid = document.getElementById("team-grid");
   grid.addEventListener("change", (e) => {
     if (e.target.matches('input[type="checkbox"]')) {
-      const state = loadTaskState();
-      state[e.target.id] = e.target.checked;
-      saveTaskState(state);
-      updateOverallProgress();
+      setDoc(TASKS_DOC, { [e.target.id]: e.target.checked }, { merge: true }).catch((err) =>
+        console.error("Failed to save task state", err)
+      );
     }
   });
 }
 
+function watchTasks() {
+  onSnapshot(
+    TASKS_DOC,
+    (snap) => {
+      taskState = snap.exists() ? snap.data() : {};
+      renderTeams();
+      updateOverallProgress();
+    },
+    (err) => console.error("Task sync error", err)
+  );
+}
+
 function updateOverallProgress() {
-  const state = loadTaskState();
   const totalTasks = TEAMS.reduce((sum, t) => sum + t.tasks.length, 0);
   const done = TEAMS.reduce((sum, t) => {
-    return (
-      sum +
-      t.tasks.filter((_, i) => state[`${t.id}-${i}`]).length
-    );
+    return sum + t.tasks.filter((_, i) => taskState[`${t.id}-${i}`]).length;
   }, 0);
   const pct = totalTasks ? Math.round((done / totalTasks) * 100) : 0;
   document.getElementById("overall-fill").style.width = `${pct}%`;
   document.getElementById("overall-count").textContent = `${done} / ${totalTasks} tasks`;
+}
+
+/* ---------- notes & suggestions (synced live via Firestore) ---------- */
+
+function renderNotes(docs) {
+  const list = document.getElementById("notes-list");
+  const empty = document.getElementById("notes-empty");
+
+  if (!docs.length) {
+    list.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  list.innerHTML = docs
+    .map((d) => {
+      const data = d.data();
+      const when = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+      const whenStr = when
+        ? when.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
+        : "just now";
+      return `
+        <div class="note-card">
+          <div class="note-card__head">
+            <span class="note-card__name">${escapeHtml(data.name)}</span>
+            <span class="note-card__time">${whenStr}</span>
+          </div>
+          <p class="note-card__text">${escapeHtml(data.text)}</p>
+        </div>`;
+    })
+    .join("");
+}
+
+function watchNotes() {
+  const notesQuery = query(collection(db, "notes"), orderBy("createdAt", "desc"));
+  onSnapshot(
+    notesQuery,
+    (snap) => renderNotes(snap.docs),
+    (err) => console.error("Notes sync error", err)
+  );
+}
+
+function setupNotesHandlers() {
+  const form = document.getElementById("notes-form");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("note-name").value.trim();
+    const text = document.getElementById("note-text").value.trim();
+    if (!name || !text) return;
+    addDoc(collection(db, "notes"), { name, text, createdAt: serverTimestamp() })
+      .then(() => form.reset())
+      .catch((err) => console.error("Failed to post note", err));
+  });
 }
 
 /* ---------- timeline ---------- */
@@ -382,8 +462,10 @@ renderBulbs();
 tickCountdown();
 setInterval(tickCountdown, 1000);
 
-renderTeams();
-updateOverallProgress();
+setupTeamHandlers();
+watchTasks();
+setupNotesHandlers();
+watchNotes();
 renderTimeline();
 renderGuests();
 setupGuestHandlers();
