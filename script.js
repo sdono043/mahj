@@ -309,11 +309,13 @@ function renderGuests() {
   empty.style.display = guests.length ? "none" : "block";
 
   const summary = document.getElementById("guest-summary");
-  const yes = guests.filter((g) => g.rsvp === "yes").length;
-  const maybe = guests.filter((g) => g.rsvp === "maybe").length;
-  const no = guests.filter((g) => g.rsvp === "no").length;
+  const HEADCOUNT_MULTIPLIER = 2; // each row is a couple
+  const yes = guests.filter((g) => g.rsvp === "yes").length * HEADCOUNT_MULTIPLIER;
+  const maybe = guests.filter((g) => g.rsvp === "maybe").length * HEADCOUNT_MULTIPLIER;
+  const no = guests.filter((g) => g.rsvp === "no").length * HEADCOUNT_MULTIPLIER;
+  const total = guests.length * HEADCOUNT_MULTIPLIER;
   summary.innerHTML = `
-    <span class="chip"><strong>${guests.length}</strong> total</span>
+    <span class="chip"><strong>${total}</strong> total</span>
     <span class="chip"><strong>${yes}</strong> yes</span>
     <span class="chip"><strong>${maybe}</strong> maybe</span>
     <span class="chip"><strong>${no}</strong> no</span>
