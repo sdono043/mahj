@@ -769,48 +769,14 @@ html.show-prices .grazing-total { display: block; }
   box-shadow: var(--shadow);
 }
 
-.map-note p {
-  margin: 0 0 1rem;
-  font-size: 0.92rem;
-  color: var(--ink-soft);
-  line-height: 1.6;
-}
-
 .yard-map {
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 1.2rem;
   border: 1px solid var(--border);
 }
 
 .yard-map img,
 .yard-map svg { display: block; width: 100%; height: auto; }
-
-.map-note__caption {
-  margin: 0 0 0.8rem;
-  font-size: 0.88rem;
-  color: var(--ink-soft);
-  line-height: 1.6;
-}
-
-.map-note__caption:last-child { margin: 1rem 0 0; font-style: italic; }
-
-.map-note code {
-  background: color-mix(in srgb, var(--olive) 16%, transparent);
-  border-radius: 5px;
-  padding: 0.1rem 0.4rem;
-  font-size: 0.85em;
-}
-
-.map-note ul {
-  margin: 0;
-  padding-left: 1.1rem;
-  font-size: 0.92rem;
-  color: var(--ink);
-  line-height: 1.7;
-}
-
-.map-note ul strong { color: var(--terracotta-dark); }
 
 @media (max-width: 640px) {
   .detail-row { grid-template-columns: 1fr; gap: 0.15rem; }
