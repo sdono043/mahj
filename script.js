@@ -78,7 +78,6 @@ const TEAMS = [
       "Knife",
       "Plates / forks",
       "Bring cake out",
-      "Coordinate the toast",
     ],
     note: "The reveal moment — keep it a fun surprise!",
     anchorLink: { href: "#detail-cake", label: "View setup details" },
