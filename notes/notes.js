@@ -31,6 +31,7 @@ const SECTIONS = [
   { id: "detail-flowers", label: "Flowers & Decor" },
   { id: "grazing-table", label: "Grazing Table" },
   { id: "bar-cocktails", label: "Cocktail Menu" },
+  { id: "bar-setup", label: "Bar Setup" },
   { id: "detail-cake", label: "Cake" },
   { id: "detail-setup", label: "Setup" },
   { id: "detail-pinata", label: "Piñata" },
