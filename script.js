@@ -117,9 +117,9 @@ const TIMELINE = [
   { time: "5:00 PM", title: "Piñata hung, final walkthrough", detail: "Piñata hung; quick walk of the whole yard." },
   { time: "5:45 PM", title: "Paella on", detail: "Get the paella going so it's ready not long after guests arrive." },
   { time: "6:00 PM", title: "Guests arrive 🎉", detail: "Welcome drinks, grazing table open." },
-  { time: "7:00 PM", title: "Paella served", detail: "Dinner under the string lights." },
-  { time: "8:30 PM", title: "Cake reveal & toast 🎂", detail: "Cake brought out, toast coordinated." },
-  { time: "9:00 PM", title: "Piñata", detail: "Reveal timed with the cake." },
+  { time: "7:00 PM (flexible)", title: "Paella served", detail: "Dinner under the string lights." },
+  { time: "8:30 PM (flexible)", title: "Cake reveal & toast 🎂", detail: "Cake brought out, toast coordinated." },
+  { time: "9:00 PM (flexible)", title: "Piñata", detail: "Reveal timed with the cake." },
   { time: "9:30 PM", title: "Dancing & night breeze", detail: "Keep the lights on and the night going." },
 ];
 
