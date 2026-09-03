@@ -848,6 +848,12 @@ html.show-prices .grazing-total { display: block; }
   color: var(--olive-dark);
 }
 
+.bar-setup-photo figcaption small {
+  font-family: "Archivo", sans-serif;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
 @media (max-width: 640px) {
   .detail-row { grid-template-columns: 1fr; gap: 0.15rem; }
 }
