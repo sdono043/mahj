@@ -30,6 +30,7 @@ const SECTIONS = [
   { id: "general", label: "General" },
   { id: "detail-flowers", label: "Flowers & Decor" },
   { id: "grazing-table", label: "Grazing Table" },
+  { id: "detail-paella", label: "Paella" },
   { id: "bar-cocktails", label: "Cocktail Menu" },
   { id: "bar-setup", label: "Bar Setup" },
   { id: "detail-cake", label: "Cake" },

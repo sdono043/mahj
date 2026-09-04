@@ -52,6 +52,20 @@ const TEAMS = [
     anchorLink: { href: "#grazing-table", label: "View shopping list" },
   },
   {
+    id: "paella",
+    icon: "🥘",
+    name: "Paella",
+    tasks: [
+      "Confirm final guest count with Daniel — a 3rd pan may be needed now that we're closer to 48",
+      "Confirm serve time (~7:00–7:15 PM)",
+      "Clear the driveway for the cooking stations",
+      "Decide cash vs. online payment",
+      "Confirm day-of contact info with Daniel",
+    ],
+    note: "Managed by the paella catering team (Land of Saffron) — not a DIY task for our crew.",
+    anchorLink: { href: "#detail-paella", label: "View setup details" },
+  },
+  {
     id: "bar",
     icon: "🍷",
     name: "Beverage / Bar",
@@ -112,11 +126,11 @@ const TEAMS = [
 const TIMELINE = [
   { time: "11:00 AM – 3:00 PM", title: "Setup", detail: "Hang lanterns & string lights, set tables, put out candles — making it all beautiful." },
   { time: "2:00 PM", title: "Flowers & Decor styling", detail: "Tablescape, candles, final “make it beautiful” pass." },
+  { time: "4:00 PM", title: "Paella chef arrives", detail: "Land of Saffron sets up the cooking stations in the driveway — managed by their team." },
   { time: "5:00 PM", title: "Patty arrives — grazing table & bar", detail: "Assemble grazing table, stock bar, chill wine, cava & champagne, make sangria." },
   { time: "5:00 PM", title: "Piñata hung, final walkthrough", detail: "Piñata hung; quick walk of the whole yard." },
-  { time: "5:45 PM", title: "Paella on", detail: "Get the paella going so it's ready not long after guests arrive." },
-  { time: "6:00 PM", title: "Guests arrive 🎉", detail: "Welcome drinks, grazing table open." },
-  { time: "7:00 PM (flexible)", title: "Paella served", detail: "Dinner under the string lights." },
+  { time: "6:00 PM", title: "Guests arrive 🎉", detail: "Welcome drinks, grazing table open. Paella cooking begins — part of the fun is watching it come together." },
+  { time: "7:00 PM (flexible)", title: "Paella served", detail: "Cooked live, ready ~7:00–7:15 PM. Dinner under the string lights." },
   { time: "8:30 PM (flexible)", title: "Cake reveal & toast 🎂", detail: "Cake brought out, toast coordinated." },
   { time: "9:00 PM (flexible)", title: "Piñata", detail: "Reveal timed with the cake." },
   { time: "9:30 PM", title: "Dancing & night breeze", detail: "Keep the lights on and the night going." },
@@ -282,6 +296,7 @@ function updateOverallProgress() {
 const NOTE_SECTIONS = [
   { id: "detail-flowers", label: "Flowers & Decor" },
   { id: "grazing-table", label: "Grazing Table" },
+  { id: "detail-paella", label: "Paella" },
   { id: "bar-cocktails", label: "Cocktail Menu" },
   { id: "bar-setup", label: "Bar Setup" },
   { id: "detail-cake", label: "Cake" },
