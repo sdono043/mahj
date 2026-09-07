@@ -4,6 +4,7 @@
 --------------------------------------------------------- */
 
 :root {
+  color-scheme: light;
   --cream: #e6d5ac;
   --linen: #d3ba87;
   --paper: #f5ecd7;
@@ -18,24 +19,6 @@
   --border: rgba(44, 33, 22, 0.18);
   --shadow: 0 10px 30px -12px rgba(44, 33, 22, 0.28);
   --radius: 18px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --cream: #201810;
-    --linen: #2b2116;
-    --paper: #2f2519;
-    --terracotta: #e07a4a;
-    --terracotta-dark: #f0966a;
-    --olive: #a3b57e;
-    --olive-dark: #c3d19f;
-    --gold: #ecc267;
-    --blush: #c8a874;
-    --ink: #f3ead9;
-    --ink-soft: #cdbfa9;
-    --border: rgba(243, 234, 217, 0.14);
-    --shadow: 0 10px 34px -10px rgba(0, 0, 0, 0.55);
-  }
 }
 
 * { box-sizing: border-box; }
