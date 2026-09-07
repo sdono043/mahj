@@ -4,19 +4,19 @@
 --------------------------------------------------------- */
 
 :root {
-  --cream: #f1e8d6;
-  --linen: #e6d8ba;
-  --paper: #fdf9ee;
+  --cream: #e6d5ac;
+  --linen: #d3ba87;
+  --paper: #f5ecd7;
   --terracotta: #c1592f;
   --terracotta-dark: #9c451f;
   --olive: #6f7d4c;
   --olive-dark: #545f39;
   --gold: #c99a3f;
-  --blush: #d9bd90;
+  --blush: #c8a267;
   --ink: #2c2116;
   --ink-soft: #5c4f3d;
-  --border: rgba(44, 33, 22, 0.16);
-  --shadow: 0 10px 30px -12px rgba(44, 33, 22, 0.25);
+  --border: rgba(44, 33, 22, 0.18);
+  --shadow: 0 10px 30px -12px rgba(44, 33, 22, 0.28);
   --radius: 18px;
 }
 
