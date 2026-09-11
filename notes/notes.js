@@ -38,6 +38,11 @@ const SECTIONS = [
   { id: "detail-pinata", label: "Piñata" },
   { id: "timeline", label: "Day-Of Timeline" },
   { id: "setup-logistics", label: "Yard Map & Logistics" },
+  { id: "rainy-the-call", label: "Rainy Day: The Call" },
+  { id: "rainy-floor-plan", label: "Rainy Day: Indoor Floor Plan" },
+  { id: "rainy-rooms", label: "Rainy Day: Room by Room" },
+  { id: "rainy-porch-bar", label: "Rainy Day: Porch — Bar & Sparkling Bar" },
+  { id: "rainy-dining-grazing", label: "Rainy Day: Dining Room — Grazing Table" },
 ];
 
 // Shares the same "seen" watermark as the main site's per-section widgets.
