@@ -31,6 +31,7 @@ const NOTE_SECTIONS = [
   { id: "rainy-rooms", label: "Room by Room" },
   { id: "rainy-porch-bar", label: "Porch — Bar & Sparkling Bar" },
   { id: "rainy-dining-grazing", label: "Dining Room — Grazing Table" },
+  { id: "rainy-inventory", label: "What's Already in the House" },
 ];
 
 // Shares the same "seen" watermark as the main site and /notes.

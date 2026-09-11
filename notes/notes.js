@@ -43,6 +43,7 @@ const SECTIONS = [
   { id: "rainy-rooms", label: "Rainy Day: Room by Room" },
   { id: "rainy-porch-bar", label: "Rainy Day: Porch — Bar & Sparkling Bar" },
   { id: "rainy-dining-grazing", label: "Rainy Day: Dining Room — Grazing Table" },
+  { id: "rainy-inventory", label: "Rainy Day: What's Already in the House" },
 ];
 
 // Shares the same "seen" watermark as the main site's per-section widgets.
