@@ -28,6 +28,7 @@ const db = getFirestore(firebaseApp);
 const NOTE_SECTIONS = [
   { id: "rainy-the-call", label: "The Call" },
   { id: "rainy-floor-plan", label: "Indoor Floor Plan" },
+  { id: "rainy-outdoor-plan", label: "Outdoor Plan — Tents" },
   { id: "rainy-rooms", label: "Room by Room" },
   { id: "rainy-porch-bar", label: "Porch — Bar & Sparkling Bar" },
   { id: "rainy-dining-grazing", label: "Dining Room — Grazing Table" },
